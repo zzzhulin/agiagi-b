@@ -1,0 +1,92 @@
+{
+	"pages": [{
+			"path": "pages/launch/launch"
+		},
+		{
+			"path": "pages/login/login"
+		},
+		{
+			"path": "pages/index/index"
+		},
+		{
+			"path": "pages/service/service"
+		},
+		{
+			"path": "pages/service/edit"
+		}
+	],
+	"subPackages": [{
+		"root": "pagesA",
+		"pages": [{
+				"path": "customer/customer"
+			},
+			{
+				"path": "scheme/scheme"
+			},
+			{
+				"path": "scheme/list"
+			},
+			{
+				"path": "scheme/detail"
+			},
+			{
+				"path": "scheme/nutrition"
+			},
+			{
+				"path": "cookbook/cookbook"
+			},
+			{
+				"path": "cookbook/detail"
+			},
+			{
+				"path": "profile/index"
+			},
+			{
+				"path": "report/age"
+			},
+			{
+				"path": "report/slimming"
+			},
+			{
+				"path": "report/height"
+			},
+			{
+				"path": "report/sleep"
+			},
+			{
+				"path": "report/metabolism"
+			},
+			{
+				"path": "report/diet"
+			},
+			{
+				"path": "report/tongue"
+			}
+		]
+	}],
+	"tabBar": {
+		"color": "#555557",
+		"selectedColor": "#30A375",
+		"borderStyle": "white",
+		"backgroundColor": "#ffffff",
+		"list": [{
+			"pagePath": "pages/index/index",
+			"iconPath": "/static/b_service.png",
+			"selectedIconPath": "/static/b_service-active.png",
+			"text": "服务台"
+		}, {
+			"pagePath": "pages/service/service",
+			"iconPath": "/static/b_user.png",
+			"selectedIconPath": "/static/b_user-active.png",
+			"text": "服务名片"
+		}]
+	},
+	"globalStyle": {
+		"navigationStyle": "custom",
+		"navigationBarTextStyle": "black"
+	},
+	"easycom": {
+		"autoscan": true
+	},
+	"uniIdRouter": {}
+}

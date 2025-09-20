@@ -1,0 +1,111 @@
+{
+  "description": "项目私有配置文件。此文件中的内容将覆盖 project.config.json 中的相同字段。项目的改动优先同步到此文件中。详见文档：https://developers.weixin.qq.com/miniprogram/dev/devtools/projectconfig.html",
+  "projectname": "B端小程序",
+  "setting": {
+    "compileHotReLoad": true
+  },
+  "condition": {
+    "miniprogram": {
+      "list": [
+        {
+          "name": "pagesA/customer/customer",
+          "pathName": "pagesA/customer/customer",
+          "query": "id=36",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "pages/login/login",
+          "pathName": "pages/login/login",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "pages/service/edit",
+          "pathName": "pages/service/edit",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "pagesA/scheme/nutrition",
+          "pathName": "pagesA/scheme/nutrition",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "pagesA/scheme/history",
+          "pathName": "pagesA/cookbook/cookbook",
+          "query": "id=393&memberId=375",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "pagesA/scheme/list",
+          "pathName": "pagesA/scheme/list",
+          "query": "id=393&memberId=375&schemeId=2",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "pagesA/scheme/list",
+          "pathName": "pagesA/scheme/list",
+          "query": "id=393&memberId=375&schemeId=2",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "pagesA/service/edit",
+          "pathName": "pagesA/service/edit",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "pagesA/scheme/detail",
+          "pathName": "pagesA/scheme/detail",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "pagesA/cookbook/detail",
+          "pathName": "pagesA/cookbook/detail",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "pagesA/cookbook/cookbook",
+          "pathName": "pagesA/cookbook/cookbook",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "pagesA/scheme/scheme",
+          "pathName": "pagesA/scheme/scheme",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "pagesA/customer/customer",
+          "pathName": "pagesA/customer/customer",
+          "query": "id=292",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "pages/index/index",
+          "pathName": "pages/index/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        }
+      ]
+    }
+  }
+}

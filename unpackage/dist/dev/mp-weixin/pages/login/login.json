@@ -1,0 +1,9 @@
+{
+  "usingComponents": {
+    "flexbox": "/components/Flexbox/Flexbox",
+    "icon": "/components/Icon/Icon",
+    "typography": "/components/Typography/Typography",
+    "l-painter": "/uni_modules/lime-painter/components/l-painter/l-painter",
+    "l-painter-image": "/uni_modules/lime-painter/components/l-painter-image/l-painter-image"
+  }
+}

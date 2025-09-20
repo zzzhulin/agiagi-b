@@ -1,0 +1,56 @@
+{
+  "pages": [
+    "pages/launch/launch",
+    "pages/login/login",
+    "pages/index/index",
+    "pages/service/service",
+    "pages/service/edit"
+  ],
+  "subPackages": [
+    {
+      "root": "pagesA",
+      "pages": [
+        "customer/customer",
+        "scheme/scheme",
+        "scheme/list",
+        "scheme/detail",
+        "scheme/nutrition",
+        "cookbook/cookbook",
+        "cookbook/detail",
+        "profile/index",
+        "report/age",
+        "report/slimming",
+        "report/height",
+        "report/sleep",
+        "report/metabolism",
+        "report/diet",
+        "report/tongue"
+      ]
+    }
+  ],
+  "window": {
+    "navigationStyle": "custom",
+    "navigationBarTextStyle": "black"
+  },
+  "tabBar": {
+    "color": "#555557",
+    "selectedColor": "#30A375",
+    "borderStyle": "white",
+    "backgroundColor": "#ffffff",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "iconPath": "/static/b_service.png",
+        "selectedIconPath": "/static/b_service-active.png",
+        "text": "服务台"
+      },
+      {
+        "pagePath": "pages/service/service",
+        "iconPath": "/static/b_user.png",
+        "selectedIconPath": "/static/b_user-active.png",
+        "text": "服务名片"
+      }
+    ]
+  },
+  "usingComponents": {}
+}

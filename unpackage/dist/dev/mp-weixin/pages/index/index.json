@@ -1,0 +1,7 @@
+{
+  "usingComponents": {
+    "typography": "/components/Typography/Typography",
+    "flexbox": "/components/Flexbox/Flexbox",
+    "icon": "/components/Icon/Icon"
+  }
+}

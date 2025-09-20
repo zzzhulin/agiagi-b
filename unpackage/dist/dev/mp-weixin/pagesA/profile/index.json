@@ -1,0 +1,14 @@
+{
+  "usingComponents": {
+    "flexbox": "/components/Flexbox/Flexbox",
+    "navbar": "/components/Navbar/Navbar",
+    "typography": "/components/Typography/Typography",
+    "icon": "/components/Icon/Icon",
+    "speech": "/components/Speech/Speech",
+    "profile-base": "/pagesA/profile/base",
+    "profile-disease": "/pagesA/profile/disease",
+    "profile-inherit": "/pagesA/profile/inherit",
+    "profile-test": "/pagesA/profile/test",
+    "profile-lifestyle": "/pagesA/profile/lifestyle"
+  }
+}
