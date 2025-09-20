@@ -140,7 +140,12 @@ var render = function () {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  var g0 = _vm.customer.service_info && _vm.customer.service_info.notes.length
+  var g0 =
+    _vm.first_goal_data && _vm.current_goal_type !== "children_growth"
+      ? parseFloat(
+          _vm.first_goal_data.initial_value - _vm.first_goal_data.current_value
+        ).toFixed(2)
+      : null
   var g1 = _vm.records.length
   var l0 = g1
     ? _vm.__map(_vm.records, function (record, __i0__) {
@@ -221,6 +226,7 @@ var _default = {
         recent_assessments: [],
         family_members: []
       },
+      member: null,
       family_members: [],
       first_goal_data: null,
       available_goal_types: [],
@@ -261,7 +267,7 @@ var _default = {
     index: function index() {
       var _this = this;
       return this.family_members.findIndex(function (item) {
-        return item.id === _this.customer.family_member_id;
+        return item.id == _this.family_member_id;
       });
     }
   }),
@@ -296,7 +302,8 @@ var _default = {
     selectMember: function selectMember(e) {
       this.family_member_id = this.family_members[e.detail.value].id;
       this.member_id = this.family_members[e.detail.value].member_user_id;
-      this.getCustomer();
+      this.member = this.family_members[e.detail.value];
+      this.getCustomer(true);
     },
     getRecordDetail: function getRecordDetail(app_id, record_id) {
       var url = '';
@@ -435,8 +442,11 @@ var _default = {
             _this8.customer = res;
             if (!toggleFamily) {
               _this8.family_members = res.family_members;
+              _this8.family_member_id = res.family_member_id;
+              _this8.member = res.family_members.find(function (item) {
+                return item.id === res.family_member_id;
+              });
             }
-            _this8.family_member_id = res.family_member_id;
             _this8.getFirstGoalData();
             _this8.getServiceHostEnable();
             _this8.getAvailableGoalTypes();

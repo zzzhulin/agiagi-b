@@ -2,17 +2,18 @@
 	<view class="customer-page">
 		<Navbar title="客户信息" :backgroundColor="navbarBgColor"></Navbar>
 		<Flexbox align="left" gap="16" className="customer-content">
-			<Icon :src="customer.headimg" size="60" type="remote" :circle="true"></Icon>
+			<Icon :src="member.user_headimg" size="60" type="remote" :circle="true"></Icon>
 			<Flexbox direction="column" gap="8">
 				<Flexbox align="left" gap="4">
-					<Typography fontSize="17" :bold="true">
+					<Typography fontSize="17" :bold="true">{{ member.name }}</Typography>
+					<!-- <Typography fontSize="17" :bold="true">
 						{{ customer.service_info && customer.service_info.notes.length ? customer.service_info.notes[0].content : customer.nickname }}
-					</Typography>
+					</Typography> -->
 					<Icon src="b_edit.png" size="16" @tap="openPopup('remarkPopup')"></Icon>
 				</Flexbox>
 				<Flexbox gap="24">
-					<Typography color="gray1">昵称：{{ customer.nickname }}</Typography>
-					<Typography color="gray1">ID：{{ customer.member_id }}</Typography>
+					<Typography color="gray1">昵称：{{ member.user_nickname }}</Typography>
+					<Typography color="gray1">ID：{{ member.member_user_id }}</Typography>
 				</Flexbox>
 			</Flexbox>
 			<picker :value="index" :range="family_members" range-key="name" @change="selectMember">
@@ -59,27 +60,47 @@
 					</Flexbox>
 				</picker>
 				<Flexbox gap="8" v-if="first_goal_data">
-					<Flexbox direction="column" className="target-info">
+					<Flexbox direction="column" className="target-info" v-if="current_goal_type !== 'children_growth'">
 						<Flexbox align="justify">
 							<Typography fontSize="18" :bold="true">{{ first_goal_data.current_value }}{{ first_goal_data.unit }}</Typography>
 							<Flexbox>
 								<Icon src="b_down-green.png" size="16" v-if="first_goal_data.initial_value - first_goal_data.current_value > 0"></Icon>
 								<Icon src="b_up-green.png" size="16" v-else></Icon>
-								<Typography color="primary">{{ first_goal_data.initial_value - first_goal_data.current_value }}{{ first_goal_data.unit }}</Typography>
+								<Typography color="primary">
+									{{ parseFloat(first_goal_data.initial_value - first_goal_data.current_value).toFixed(2) }}{{ first_goal_data.unit }}
+								</Typography>
 							</Flexbox>
 						</Flexbox>
 						<Typography color="gray1">当前体重</Typography>
 					</Flexbox>
-					<!-- <Flexbox direction="column" className="target-info">
-						<Flexbox align="justify">
-							<Typography fontSize="18" :bold="true">98cm</Typography>
-							<Flexbox>
-								<Icon src="b_up-green.png" size="16"></Icon>
-								<Typography color="primary">2cm</Typography>
+					<block v-else>
+						<block v-if="first_goal_data.growth_rate">
+							<Flexbox direction="column" align="center" className="target-info">
+								<Flexbox align="justify">
+									<Typography fontSize="18" :bold="true">{{ first_goal_data.age_years }}岁</Typography>
+								</Flexbox>
+								<Typography color="gray1">年龄</Typography>
 							</Flexbox>
-						</Flexbox>
-						<Typography color="gray1">当前腰围</Typography>
-					</Flexbox> -->
+							<Flexbox direction="column" align="center" className="target-info">
+								<Flexbox align="justify">
+									<Typography fontSize="18" color="primary" :bold="true">{{ first_goal_data.growth_rate }}cm/年</Typography>
+								</Flexbox>
+								<Typography color="primary">增高速率</Typography>
+							</Flexbox>
+							<Flexbox direction="column" align="center" className="target-info">
+								<Flexbox align="justify">
+									<Typography fontSize="18" :bold="true">{{ first_goal_data.growth_evaluation }}</Typography>
+								</Flexbox>
+								<Typography color="gray1">评价</Typography>
+							</Flexbox>
+						</block>
+						<block v-else>
+							<Flexbox align="center" direction="column" className="empty-content">
+								<Icon src="empty.png" size="128"></Icon>
+								<Typography color="gray2">{{ first_goal_data.growth_evaluation }}</Typography>
+							</Flexbox>
+						</block>
+					</block>
 				</Flexbox>
 				<Flexbox align="center" direction="column" className="empty-content" v-else>
 					<Icon src="empty.png" size="128"></Icon>
@@ -200,6 +221,7 @@ export default {
 				recent_assessments: [],
 				family_members: []
 			},
+			member: null,
 			family_members: [],
 			first_goal_data: null,
 			available_goal_types: [],
@@ -239,7 +261,7 @@ export default {
 	computed: {
 		...mapState(['userInfo']),
 		index() {
-			return this.family_members.findIndex((item) => item.id === this.customer.family_member_id);
+			return this.family_members.findIndex((item) => item.id == this.family_member_id);
 		}
 	},
 	methods: {
@@ -273,7 +295,8 @@ export default {
 		selectMember(e) {
 			this.family_member_id = this.family_members[e.detail.value].id;
 			this.member_id = this.family_members[e.detail.value].member_user_id;
-			this.getCustomer();
+			this.member = this.family_members[e.detail.value];
+			this.getCustomer(true);
 		},
 		getRecordDetail(app_id, record_id) {
 			let url = '';
@@ -404,9 +427,9 @@ export default {
 						this.customer = res;
 						if (!toggleFamily) {
 							this.family_members = res.family_members;
+							this.family_member_id = res.family_member_id;
+							this.member = res.family_members.find((item) => item.id === res.family_member_id);
 						}
-
-						this.family_member_id = res.family_member_id;
 						this.getFirstGoalData();
 						this.getServiceHostEnable();
 						this.getAvailableGoalTypes();
