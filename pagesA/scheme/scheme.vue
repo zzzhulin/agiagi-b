@@ -3,17 +3,17 @@
 		<Navbar title="膳食方案" :backgroundColor="navbarBgColor"></Navbar>
 		<picker :value="member_index" :range="family_members" range-key="name" @change="selectMember">
 			<Flexbox gap="20" className="user-content">
-				<Flexbox align="center" gap="12" className="user-info">
+				<Flexbox align="left" gap="12" className="user-info">
 					<Icon :src="headimg" size="48" type="remote" :circle="true" className="user-avatar"></Icon>
 					<Flexbox direction="column" gap="4">
 						<Typography fontSize="18" :bold="true">{{ member_name }}（{{ relationship }}）</Typography>
-						<Typography color="gray1">{{ disease_name }}</Typography>
+						<Typography color="gray1">{{ disease_name || '暂无疾病信息' }}</Typography>
 					</Flexbox>
 				</Flexbox>
 				<Icon src="b_arrow-down.png" size="24"></Icon>
 			</Flexbox>
 		</picker>
-		<Flexbox direction="column" gap="24" className="scheme-container">
+		<Flexbox direction="column" gap="24" className="scheme-container" v-if="scheme_name">
 			<Flexbox direction="column" gap="12">
 				<Flexbox align="justify">
 					<Typography fontSize="22" color="primary" :bold="true">{{ scheme_name }}</Typography>
@@ -63,7 +63,31 @@
 				</Flexbox>
 			</Flexbox>
 		</Flexbox>
-		<Flexbox gap="9" className="tabbar-content" v-if="recipe_data.recipe_content.length">
+
+		<Flexbox align="center" direction="column" gap="30" className="empty-content" v-if="!loaded && !isEmpty && recipe_data.recipe_content.length">
+			<Flexbox align="center" direction="column">
+				<Typography color="primary">AI正在为你食谱，</Typography>
+				<Typography color="primary">预计用时2～5分钟，请稍后刷新本页面...</Typography>
+			</Flexbox>
+			<Flexbox align="center" className="refresh-btn" @tap="getCookbook">
+				<Typography fontSize="16" color="primary">刷新</Typography>
+			</Flexbox>
+		</Flexbox>
+
+		<Flexbox direction="column" align="center" className="empty-scheme" v-if="isEmpty">
+			<Icon src="b_empty-result.png" size="128"></Icon>
+			<Flexbox direction="column" align="center" gap="12">
+				<Flexbox direction="column" align="center">
+					<Typography color="gray2">该成员还没有制定</Typography>
+					<Typography color="gray2">膳食方案</Typography>
+				</Flexbox>
+				<Flexbox align="center" className="select-btn" @tap="navigateTo(`/pagesA/scheme/list?id=${member_id}&memberId=${family_member_id}`)">
+					<Typography fontSize="16" color="white" :bold="true">选择方案</Typography>
+				</Flexbox>
+			</Flexbox>
+		</Flexbox>
+
+		<Flexbox gap="9" className="tabbar-content" v-if="recipe_data.recipe_content.length && !isEmpty">
 			<Flexbox align="center" gap="4" className="adjust-btn" @tap="openPopup('speechPopup')">
 				<Icon src="b_microphone-primary.png" size="24"></Icon>
 				<Typography fontSize="18" color="primary">调整食谱</Typography>
@@ -105,7 +129,9 @@ export default {
 			recipe_data: {
 				recipe_content: []
 			},
-			speechResult: ''
+			speechResult: '',
+			loaded: false,
+			isEmpty: false
 		};
 	},
 	onLoad(option) {
@@ -140,8 +166,30 @@ export default {
 			return [].concat(...meal.map((dish) => dish.name + '(' + dish.quantity + ')'));
 		},
 		selectMember(e) {
-			this.member_id = this.family_members[e.detail.value].member_id;
-			this.getCustomer();
+			this.member_index = e.detail.value;
+			// this.member_id = this.family_members[e.detail.value].member_id;
+			this.member_name = this.family_members[e.detail.value].name;
+			this.family_member_id = this.family_members[e.detail.value].id;
+			this.member_name = this.family_members[e.detail.value].name;
+			this.headimg = this.family_members[e.detail.value].user_headimg;
+			this.relationship = this.family_members[e.detail.value].relationship;
+			this.scheme_id = '';
+			this.scheme_name = '';
+			this.recipe_data.recipe_content = [];
+			this.updateHomepage();
+		},
+		updateHomepage() {
+			request({
+				url: `/api/health-service/user-member-record/update_homepage?member_id=${this.family_member_id}`,
+				method: 'POST',
+				success: (res) => {
+					if (res) {
+						this.getDiseaseHistory();
+						this.getScheme();
+						this.getCookbook();
+					}
+				}
+			});
 		},
 		navigateTo(url) {
 			uni.navigateTo({
@@ -246,11 +294,11 @@ export default {
 				url: `/api/customers/${this.member_id}`,
 				success: (res) => {
 					if (res) {
-						this.headimg = res.headimg;
-						this.member_name = res.realname;
 						this.family_members = res.family_members;
 						this.member_index = res.family_members.findIndex((item) => item.id === res.family_member_id);
 						this.family_member_id = res.family_members[this.member_index].id;
+						this.member_name = res.family_members[this.member_index].name;
+						this.headimg = res.family_members[this.member_index].user_headimg;
 						this.relationship = res.family_members[this.member_index].relationship;
 						this.getDiseaseHistory();
 						this.getScheme();
@@ -283,6 +331,9 @@ export default {
 					if (res) {
 						this.scheme_name = res.scheme_name;
 						this.scheme_id = res.id;
+						this.isEmpty = false;
+					} else {
+						this.isEmpty = true;
 					}
 				}
 			});
@@ -299,6 +350,9 @@ export default {
 					if (res) {
 						this.recipe_data = res;
 					}
+				},
+				complete: () => {
+					this.loaded = true;
 				}
 			});
 		}
@@ -396,6 +450,28 @@ export default {
 
 	.push-btn {
 		background-color: $uni-color-primary;
+	}
+
+	.empty-content {
+		margin-top: 60rpx;
+	}
+
+	.refresh-btn {
+		width: 200rpx;
+		height: 64rpx;
+		border-radius: 44rpx;
+		box-shadow: 0 0 0 2rpx $uni-color-primary inset;
+	}
+
+	.empty-scheme {
+		margin-top: 216rpx;
+	}
+
+	.select-btn {
+		width: 200rpx;
+		height: 72rpx;
+		background-color: $uni-color-primary;
+		border-radius: 44rpx;
 	}
 }
 </style>

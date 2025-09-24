@@ -46,7 +46,7 @@ export default {
 			imageLoaed: false
 		};
 	},
-	onLoad() {
+	onShow() {
 		this.getUserInfo();
 	},
 	onPageScroll(e) {

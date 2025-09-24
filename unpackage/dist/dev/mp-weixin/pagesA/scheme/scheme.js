@@ -75,23 +75,26 @@ var render = function () {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  var g0 = _vm.recipe_data.recipe_content.length
-  var l1 = _vm.__map(_vm.recipe_data.recipe_content, function (day, index) {
-    var $orig = _vm.__get_orig(day)
-    var l0 = _vm.__map(_vm.rows, function (row, __i0__) {
-      var $orig = _vm.__get_orig(row)
-      var g1 = _vm.mergedQuantities(day[row] || []).join("\n")
-      return {
-        $orig: $orig,
-        g1: g1,
-      }
-    })
-    return {
-      $orig: $orig,
-      l0: l0,
-    }
-  })
-  var g2 = _vm.recipe_data.recipe_content.length
+  var g0 = _vm.scheme_name ? _vm.recipe_data.recipe_content.length : null
+  var l1 = _vm.scheme_name
+    ? _vm.__map(_vm.recipe_data.recipe_content, function (day, index) {
+        var $orig = _vm.__get_orig(day)
+        var l0 = _vm.__map(_vm.rows, function (row, __i0__) {
+          var $orig = _vm.__get_orig(row)
+          var g1 = _vm.mergedQuantities(day[row] || []).join("\n")
+          return {
+            $orig: $orig,
+            g1: g1,
+          }
+        })
+        return {
+          $orig: $orig,
+          l0: l0,
+        }
+      })
+    : null
+  var g2 = !_vm.loaded && !_vm.isEmpty && _vm.recipe_data.recipe_content.length
+  var g3 = _vm.recipe_data.recipe_content.length && !_vm.isEmpty
   _vm.$mp.data = Object.assign(
     {},
     {
@@ -99,6 +102,7 @@ var render = function () {
         g0: g0,
         l1: l1,
         g2: g2,
+        g3: g3,
       },
     }
   )
@@ -174,7 +178,9 @@ var _default = {
       recipe_data: {
         recipe_content: []
       },
-      speechResult: ''
+      speechResult: '',
+      loaded: false,
+      isEmpty: false
     };
   },
   onLoad: function onLoad(option) {
@@ -209,8 +215,31 @@ var _default = {
       })));
     },
     selectMember: function selectMember(e) {
-      this.member_id = this.family_members[e.detail.value].member_id;
-      this.getCustomer();
+      this.member_index = e.detail.value;
+      // this.member_id = this.family_members[e.detail.value].member_id;
+      this.member_name = this.family_members[e.detail.value].name;
+      this.family_member_id = this.family_members[e.detail.value].id;
+      this.member_name = this.family_members[e.detail.value].name;
+      this.headimg = this.family_members[e.detail.value].user_headimg;
+      this.relationship = this.family_members[e.detail.value].relationship;
+      this.scheme_id = '';
+      this.scheme_name = '';
+      this.recipe_data.recipe_content = [];
+      this.updateHomepage();
+    },
+    updateHomepage: function updateHomepage() {
+      var _this = this;
+      (0, _request.request)({
+        url: "/api/health-service/user-member-record/update_homepage?member_id=".concat(this.family_member_id),
+        method: 'POST',
+        success: function success(res) {
+          if (res) {
+            _this.getDiseaseHistory();
+            _this.getScheme();
+            _this.getCookbook();
+          }
+        }
+      });
     },
     navigateTo: function navigateTo(url) {
       uni.navigateTo({
@@ -218,7 +247,7 @@ var _default = {
       });
     },
     onAnalysis: function onAnalysis() {
-      var _this = this;
+      var _this2 = this;
       uni.showLoading({
         title: '正在分析...',
         mask: true
@@ -232,8 +261,8 @@ var _default = {
         },
         success: function success(res) {
           if (res) {
-            _this.setNutritionData(res);
-            _this.navigateTo('/pagesA/scheme/nutrition');
+            _this2.setNutritionData(res);
+            _this2.navigateTo('/pagesA/scheme/nutrition');
           }
         },
         complete: function complete() {
@@ -242,7 +271,7 @@ var _default = {
       });
     },
     onPush: function onPush() {
-      var _this2 = this;
+      var _this3 = this;
       uni.showLoading({
         title: '正在推送...',
         mask: true
@@ -258,7 +287,7 @@ var _default = {
         },
         success: function success(res) {
           if (res) {
-            _this2.recipe_data = res;
+            _this3.recipe_data = res;
           }
         },
         complete: function complete() {
@@ -267,7 +296,7 @@ var _default = {
       });
     },
     tuneRecipe: function tuneRecipe() {
-      var _this3 = this;
+      var _this4 = this;
       uni.showLoading({
         title: '正在调整...',
         mask: true
@@ -281,7 +310,7 @@ var _default = {
         },
         success: function success(res) {
           if (res) {
-            _this3.recipe_data = res;
+            _this4.recipe_data = res;
           }
         },
         complete: function complete() {
@@ -290,7 +319,7 @@ var _default = {
       });
     },
     generateRecipe: function generateRecipe() {
-      var _this4 = this;
+      var _this5 = this;
       uni.showLoading({
         title: '正在生成...',
         mask: true
@@ -306,7 +335,7 @@ var _default = {
         },
         success: function success(res) {
           if (res) {
-            _this4.recipe_data = res;
+            _this5.recipe_data = res;
           }
         },
         complete: function complete() {
@@ -315,28 +344,28 @@ var _default = {
       });
     },
     getCustomer: function getCustomer() {
-      var _this5 = this;
+      var _this6 = this;
       (0, _request.request)({
         url: "/api/customers/".concat(this.member_id),
         success: function success(res) {
           if (res) {
-            _this5.headimg = res.headimg;
-            _this5.member_name = res.realname;
-            _this5.family_members = res.family_members;
-            _this5.member_index = res.family_members.findIndex(function (item) {
+            _this6.family_members = res.family_members;
+            _this6.member_index = res.family_members.findIndex(function (item) {
               return item.id === res.family_member_id;
             });
-            _this5.family_member_id = res.family_members[_this5.member_index].id;
-            _this5.relationship = res.family_members[_this5.member_index].relationship;
-            _this5.getDiseaseHistory();
-            _this5.getScheme();
-            _this5.getCookbook();
+            _this6.family_member_id = res.family_members[_this6.member_index].id;
+            _this6.member_name = res.family_members[_this6.member_index].name;
+            _this6.headimg = res.family_members[_this6.member_index].user_headimg;
+            _this6.relationship = res.family_members[_this6.member_index].relationship;
+            _this6.getDiseaseHistory();
+            _this6.getScheme();
+            _this6.getCookbook();
           }
         }
       });
     },
     getDiseaseHistory: function getDiseaseHistory() {
-      var _this6 = this;
+      var _this7 = this;
       (0, _request.request)({
         url: '/api/health-service/user-member-record/disease_history',
         data: {
@@ -344,7 +373,7 @@ var _default = {
         },
         success: function success(res) {
           if (res) {
-            _this6.disease_name = res.map(function (item) {
+            _this7.disease_name = res.map(function (item) {
               return item.disease_name;
             }).join('、');
           }
@@ -352,7 +381,7 @@ var _default = {
       });
     },
     getScheme: function getScheme() {
-      var _this7 = this;
+      var _this8 = this;
       (0, _request.request)({
         url: '/api/health-service/diet-scheme/user-selected',
         data: {
@@ -361,14 +390,17 @@ var _default = {
         },
         success: function success(res) {
           if (res) {
-            _this7.scheme_name = res.scheme_name;
-            _this7.scheme_id = res.id;
+            _this8.scheme_name = res.scheme_name;
+            _this8.scheme_id = res.id;
+            _this8.isEmpty = false;
+          } else {
+            _this8.isEmpty = true;
           }
         }
       });
     },
     getCookbook: function getCookbook() {
-      var _this8 = this;
+      var _this9 = this;
       (0, _request.request)({
         url: '/api/health-service/diet-scheme/get-user-recipe',
         method: 'POST',
@@ -378,8 +410,11 @@ var _default = {
         },
         success: function success(res) {
           if (res) {
-            _this8.recipe_data = res;
+            _this9.recipe_data = res;
           }
+        },
+        complete: function complete() {
+          _this9.loaded = true;
         }
       });
     }

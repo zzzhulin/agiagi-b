@@ -140,12 +140,7 @@ var render = function () {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  var g0 =
-    _vm.first_goal_data && _vm.current_goal_type !== "children_growth"
-      ? parseFloat(
-          _vm.first_goal_data.initial_value - _vm.first_goal_data.current_value
-        ).toFixed(2)
-      : null
+  var g0 = _vm.customer.service_info && _vm.customer.service_info.notes.length
   var g1 = _vm.records.length
   var l0 = g1
     ? _vm.__map(_vm.records, function (record, __i0__) {
@@ -226,8 +221,6 @@ var _default = {
         recent_assessments: [],
         family_members: []
       },
-      member: null,
-      family_members: [],
       first_goal_data: null,
       available_goal_types: [],
       current_goal_type_index: '',
@@ -248,6 +241,8 @@ var _default = {
   },
   onLoad: function onLoad(option) {
     this.member_id = option.id;
+  },
+  onShow: function onShow() {
     this.getCustomer();
   },
   onPageScroll: function onPageScroll(e) {
@@ -266,8 +261,8 @@ var _default = {
   computed: _objectSpread(_objectSpread({}, (0, _vuex.mapState)(['userInfo'])), {}, {
     index: function index() {
       var _this = this;
-      return this.family_members.findIndex(function (item) {
-        return item.id == _this.family_member_id;
+      return this.customer.family_members.findIndex(function (item) {
+        return item.id == _this.customer.family_member_id;
       });
     }
   }),
@@ -300,10 +295,8 @@ var _default = {
       this.updateGoalType();
     },
     selectMember: function selectMember(e) {
-      this.family_member_id = this.family_members[e.detail.value].id;
-      this.member_id = this.family_members[e.detail.value].member_user_id;
-      this.member = this.family_members[e.detail.value];
-      this.getCustomer(true);
+      this.family_member_id = this.customer.family_members[e.detail.value].id;
+      this.updateHomepage();
     },
     getRecordDetail: function getRecordDetail(app_id, record_id) {
       var url = '';
@@ -337,8 +330,26 @@ var _default = {
         url: url + "?from=test&id=".concat(this.member_id, "&memberId=").concat(this.family_member_id, "&appId=").concat(app_id, "&recordId=").concat(record_id)
       });
     },
-    updateProfile: function updateProfile() {
+    updateHomepage: function updateHomepage() {
       var _this2 = this;
+      (0, _request.request)({
+        url: "/api/health-service/user-member-record/update_homepage?member_id=".concat(this.family_member_id),
+        method: 'POST',
+        success: function success(res) {
+          if (res) {
+            _this2.getFirstGoalData();
+            _this2.getServiceHostEnable();
+            _this2.getAvailableGoalTypes();
+            _this2.getScheme();
+            _this2.getSchemes();
+            _this2.getConsulationTime();
+            _this2.getRecords();
+          }
+        }
+      });
+    },
+    updateProfile: function updateProfile() {
+      var _this3 = this;
       uni.showLoading({
         title: '正在更新...',
         mask: true
@@ -353,7 +364,7 @@ var _default = {
         },
         success: function success(res) {
           if (res) {
-            _this2.getCustomer();
+            _this3.getCustomer();
           }
         },
         complete: function complete() {
@@ -362,7 +373,7 @@ var _default = {
       });
     },
     updateRemark: function updateRemark() {
-      var _this3 = this;
+      var _this4 = this;
       (0, _request.request)({
         url: "/api/customers/".concat(this.member_id, "/notes"),
         method: 'PUT',
@@ -372,25 +383,25 @@ var _default = {
         },
         success: function success(res) {
           if (res) {
-            _this3.closePopup('remarkPopup');
-            _this3.getCustomer();
+            _this4.closePopup('remarkPopup');
+            _this4.getCustomer();
           }
         }
       });
     },
     getConsulationTime: function getConsulationTime() {
-      var _this4 = this;
+      var _this5 = this;
       (0, _request.request)({
         url: "/api/customers/".concat(this.member_id, "/consultation_time"),
         success: function success(res) {
           if (res) {
-            _this4.remaining_time = res.remaining_time;
+            _this5.remaining_time = res.remaining_time;
           }
         }
       });
     },
     updateConsulationTime: function updateConsulationTime() {
-      var _this5 = this;
+      var _this6 = this;
       (0, _request.request)({
         url: "/api/customers/".concat(this.member_id, "/consultation_time"),
         method: 'PUT',
@@ -400,14 +411,14 @@ var _default = {
         },
         success: function success(res) {
           if (res) {
-            _this5.closePopup('durationPopup');
-            _this5.getConsulationTime();
+            _this6.closePopup('durationPopup');
+            _this6.getConsulationTime();
           }
         }
       });
     },
     putServiceHostEnable: function putServiceHostEnable(service_hosting_enabled) {
-      var _this6 = this;
+      var _this7 = this;
       (0, _request.request)({
         url: "/api/customers/nutrition-profile/".concat(this.member_id, "/service-hosting"),
         method: 'PUT',
@@ -416,50 +427,43 @@ var _default = {
         },
         success: function success(res) {
           if (res) {
-            _this6.service_hosting_enabled = service_hosting_enabled;
+            _this7.service_hosting_enabled = service_hosting_enabled;
           }
         }
       });
     },
     getServiceHostEnable: function getServiceHostEnable() {
-      var _this7 = this;
+      var _this8 = this;
       (0, _request.request)({
         url: "/api/customers/nutrition-profile/".concat(this.member_id, "/service-hosting"),
         success: function success(res) {
           if (res) {
-            _this7.service_hosting_enabled = res.service_hosting_enabled;
+            _this8.service_hosting_enabled = res.service_hosting_enabled;
           }
         }
       });
     },
     getCustomer: function getCustomer() {
-      var _this8 = this;
-      var toggleFamily = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+      var _this9 = this;
       (0, _request.request)({
         url: "/api/customers/".concat(this.member_id),
         success: function success(res) {
           if (res) {
-            _this8.customer = res;
-            if (!toggleFamily) {
-              _this8.family_members = res.family_members;
-              _this8.family_member_id = res.family_member_id;
-              _this8.member = res.family_members.find(function (item) {
-                return item.id === res.family_member_id;
-              });
-            }
-            _this8.getFirstGoalData();
-            _this8.getServiceHostEnable();
-            _this8.getAvailableGoalTypes();
-            _this8.getScheme();
-            _this8.getSchemes();
-            _this8.getConsulationTime();
-            _this8.getRecords();
+            _this9.customer = res;
+            _this9.family_member_id = res.family_member_id;
+            _this9.getFirstGoalData();
+            _this9.getServiceHostEnable();
+            _this9.getAvailableGoalTypes();
+            _this9.getScheme();
+            _this9.getSchemes();
+            _this9.getConsulationTime();
+            _this9.getRecords();
           }
         }
       });
     },
     getFirstGoalData: function getFirstGoalData() {
-      var _this9 = this;
+      var _this10 = this;
       (0, _request.request)({
         url: '/api/health-service/user-member-record/get_first_goal_data',
         data: {
@@ -468,14 +472,14 @@ var _default = {
         },
         success: function success(res) {
           if (res) {
-            _this9.duration_days = res.duration_days;
-            _this9.first_goal_data = res.goal_data;
+            _this10.duration_days = res.duration_days;
+            _this10.first_goal_data = res.goal_data;
           }
         }
       });
     },
     getAvailableGoalTypes: function getAvailableGoalTypes() {
-      var _this10 = this;
+      var _this11 = this;
       (0, _request.request)({
         url: '/api/health-service/user-member-record/get_available_goal_types',
         data: {
@@ -484,30 +488,30 @@ var _default = {
         },
         success: function success(res) {
           if (res) {
-            _this10.available_goal_types = res.available_goal_types;
-            _this10.current_goal_type = res.current_goal_type;
-            _this10.current_goal_type_index = res.available_goal_types.findIndex(function (item) {
+            _this11.available_goal_types = res.available_goal_types;
+            _this11.current_goal_type = res.current_goal_type;
+            _this11.current_goal_type_index = res.available_goal_types.findIndex(function (item) {
               return item.goal_type === res.current_goal_type;
             });
-            _this10.goal_type_name = res.available_goal_types[_this10.current_goal_type_index].goal_type_name;
+            _this11.goal_type_name = res.available_goal_types[_this11.current_goal_type_index].goal_type_name;
           }
         }
       });
     },
     updateGoalType: function updateGoalType() {
-      var _this11 = this;
+      var _this12 = this;
       (0, _request.request)({
         url: "/api/health-service/user-member-record/update_goal_type?member_id=".concat(this.family_member_id, "&goal_type=").concat(this.current_goal_type),
         method: 'POST',
         success: function success(res) {
           if (res) {
-            _this11.getFirstGoalData();
+            _this12.getFirstGoalData();
           }
         }
       });
     },
     getScheme: function getScheme() {
-      var _this12 = this;
+      var _this13 = this;
       (0, _request.request)({
         url: '/api/health-service/diet-scheme/user-selected',
         data: {
@@ -516,14 +520,14 @@ var _default = {
         },
         success: function success(res) {
           if (res) {
-            _this12.scheme_name = res.scheme_name;
-            _this12.scheme_id = res.id;
+            _this13.scheme_name = res.scheme_name;
+            _this13.scheme_id = res.id;
           }
         }
       });
     },
     updateScheme: function updateScheme() {
-      var _this13 = this;
+      var _this14 = this;
       (0, _request.request)({
         url: '/api/health-service/diet-scheme/switch-diet-scheme',
         method: 'POST',
@@ -534,13 +538,13 @@ var _default = {
         },
         success: function success(res) {
           if (res) {
-            _this13.getScheme();
+            _this14.getScheme();
           }
         }
       });
     },
     getSchemes: function getSchemes() {
-      var _this14 = this;
+      var _this15 = this;
       (0, _request.request)({
         url: '/api/health-service/diet-scheme/diet-schemes-status',
         data: {
@@ -549,16 +553,16 @@ var _default = {
         },
         success: function success(res) {
           if (res) {
-            _this14.schemes = res.schemes;
-            _this14.scheme_index = res.schemes.findIndex(function (item) {
-              return item.id === parseInt(_this14.scheme_id);
+            _this15.schemes = res.schemes;
+            _this15.scheme_index = res.schemes.findIndex(function (item) {
+              return item.id === parseInt(_this15.scheme_id);
             });
           }
         }
       });
     },
     getRecords: function getRecords() {
-      var _this15 = this;
+      var _this16 = this;
       (0, _request.request)({
         url: '/api/health-service/user-member-record/app-test-records',
         method: 'POST',
@@ -570,12 +574,12 @@ var _default = {
         },
         success: function success(res) {
           if (res && res.pagination.total) {
-            if (_this15.page === 1) {
-              _this15.records = res.records;
+            if (_this16.page === 1) {
+              _this16.records = res.records;
             } else {
-              _this15.records = _this15.records.concat(res.records);
+              _this16.records = _this16.records.concat(res.records);
             }
-            _this15.total = res.pagination.total;
+            _this16.total = res.pagination.total;
           }
         }
       });

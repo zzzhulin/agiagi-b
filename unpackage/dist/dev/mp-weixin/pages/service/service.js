@@ -199,7 +199,7 @@ var _default = {
       imageLoaed: false
     };
   },
-  onLoad: function onLoad() {
+  onShow: function onShow() {
     this.getUserInfo();
   },
   onPageScroll: function onPageScroll(e) {

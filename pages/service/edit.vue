@@ -212,7 +212,7 @@ export default {
 				data: payload,
 				success: (res) => {
 					uni.showToast({ title: '保存成功', icon: 'success' });
-					this.getUserInfo();
+					uni.navigateBack();
 				},
 				fail: () => {
 					uni.showToast({ title: '保存失败', icon: 'none' });

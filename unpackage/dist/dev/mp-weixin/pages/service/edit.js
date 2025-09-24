@@ -394,7 +394,6 @@ var _default = {
       }
     },
     onSave: function onSave() {
-      var _this4 = this;
       var payload = {
         nickname: this.nickname,
         name: this.name,
@@ -409,7 +408,7 @@ var _default = {
             title: '保存成功',
             icon: 'success'
           });
-          _this4.getUserInfo();
+          uni.navigateBack();
         },
         fail: function fail() {
           uni.showToast({

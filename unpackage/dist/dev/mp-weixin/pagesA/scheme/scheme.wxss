@@ -94,3 +94,21 @@
 .scheme-page .push-btn {
   background-color: #30a375;
 }
+.scheme-page .empty-content {
+  margin-top: 60rpx;
+}
+.scheme-page .refresh-btn {
+  width: 200rpx;
+  height: 64rpx;
+  border-radius: 44rpx;
+  box-shadow: 0 0 0 2rpx #30a375 inset;
+}
+.scheme-page .empty-scheme {
+  margin-top: 216rpx;
+}
+.scheme-page .select-btn {
+  width: 200rpx;
+  height: 72rpx;
+  background-color: #30a375;
+  border-radius: 44rpx;
+}
