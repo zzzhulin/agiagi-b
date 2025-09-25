@@ -75,26 +75,29 @@ var render = function () {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  var g0 = _vm.scheme_name ? _vm.recipe_data.recipe_content.length : null
-  var l1 = _vm.scheme_name
-    ? _vm.__map(_vm.recipe_data.recipe_content, function (day, index) {
-        var $orig = _vm.__get_orig(day)
-        var l0 = _vm.__map(_vm.rows, function (row, __i0__) {
-          var $orig = _vm.__get_orig(row)
-          var g1 = _vm.mergedQuantities(day[row] || []).join("\n")
+  var g0 = _vm.scheme_name
+    ? _vm.recipe_data.recipe_content.length && !_vm.isLoading
+    : null
+  var l1 =
+    _vm.scheme_name && g0
+      ? _vm.__map(_vm.recipe_data.recipe_content, function (day, index) {
+          var $orig = _vm.__get_orig(day)
+          var l0 = _vm.__map(_vm.rows, function (row, __i0__) {
+            var $orig = _vm.__get_orig(row)
+            var g1 = _vm.mergedQuantities(day[row] || []).join("\n")
+            return {
+              $orig: $orig,
+              g1: g1,
+            }
+          })
           return {
             $orig: $orig,
-            g1: g1,
+            l0: l0,
           }
         })
-        return {
-          $orig: $orig,
-          l0: l0,
-        }
-      })
-    : null
-  var g2 = !_vm.loaded && !_vm.isEmpty && _vm.recipe_data.recipe_content.length
-  var g3 = _vm.recipe_data.recipe_content.length && !_vm.isEmpty
+      : null
+  var g2 =
+    _vm.recipe_data.recipe_content.length && !_vm.isEmpty && !_vm.isLoading
   _vm.$mp.data = Object.assign(
     {},
     {
@@ -102,7 +105,6 @@ var render = function () {
         g0: g0,
         l1: l1,
         g2: g2,
-        g3: g3,
       },
     }
   )
@@ -179,7 +181,7 @@ var _default = {
         recipe_content: []
       },
       speechResult: '',
-      loaded: false,
+      isLoading: false,
       isEmpty: false
     };
   },
@@ -287,6 +289,10 @@ var _default = {
         },
         success: function success(res) {
           if (res) {
+            uni.showToast({
+              title: '推送成功',
+              icon: 'none'
+            });
             _this3.recipe_data = res;
           }
         },
@@ -411,10 +417,10 @@ var _default = {
         success: function success(res) {
           if (res) {
             _this9.recipe_data = res;
+            _this9.isLoading = false;
+          } else {
+            _this9.isLoading = true;
           }
-        },
-        complete: function complete() {
-          _this9.loaded = true;
         }
       });
     }

@@ -24,6 +24,7 @@
         "report/sleep",
         "report/metabolism",
         "report/diet",
+        "report/emotion",
         "report/tongue"
       ]
     }

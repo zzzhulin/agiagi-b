@@ -114,7 +114,7 @@
 				</Flexbox>
 			</Flexbox>
 			<Flexbox direction="column" className="scheme-content">
-				<Flexbox align="justify" className="scheme-info" @tap="navigateTo(`/pagesA/profile/index?tab=base&memberId=${customer.family_member_id}`)">
+				<Flexbox align="justify" className="scheme-info" @tap="navigateTo(`/pagesA/profile/index?tab=base&memberId=${family_member_id}`)">
 					<Typography fontSize="16" color="gray1">健康档案</Typography>
 					<Icon src="b_arrow-right-gray2.png" size="20"></Icon>
 				</Flexbox>
@@ -299,6 +299,9 @@ export default {
 			this.updateGoalType();
 		},
 		selectMember(e) {
+			this.remaining_time = '';
+			this.scheme_name = '';
+			this.records = [];
 			this.family_member_id = this.customer.family_members[e.detail.value].id;
 			this.updateHomepage();
 		},

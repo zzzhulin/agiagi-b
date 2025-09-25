@@ -295,6 +295,9 @@ var _default = {
       this.updateGoalType();
     },
     selectMember: function selectMember(e) {
+      this.remaining_time = '';
+      this.scheme_name = '';
+      this.records = [];
       this.family_member_id = this.customer.family_members[e.detail.value].id;
       this.updateHomepage();
     },

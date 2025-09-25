@@ -34,37 +34,39 @@
 					</Flexbox>
 				</Flexbox>
 			</Flexbox>
-			<Flexbox align="justify" v-if="recipe_data.recipe_content.length">
-				<Typography fontSize="22" :bold="true">生成的食谱</Typography>
-				<Flexbox gap="8">
-					<Flexbox align="center" gap="2" @tap="onAnalysis">
-						<Icon src="b_leaf.png" size="20"></Icon>
-						<Typography color="gray1">营养分析</Typography>
-					</Flexbox>
-					<Flexbox align="center" gap="2" @tap="navigateTo(`/pagesA/cookbook/cookbook?id=${member_id}&memberId=${family_member_id}`)">
-						<Icon src="b_file.png" size="20"></Icon>
-						<Typography color="gray1">历史食谱</Typography>
+			<block v-if="recipe_data.recipe_content.length && !isLoading">
+				<Flexbox align="justify">
+					<Typography fontSize="22" :bold="true">生成的食谱</Typography>
+					<Flexbox gap="8">
+						<Flexbox align="center" gap="2" @tap="onAnalysis">
+							<Icon src="b_leaf.png" size="20"></Icon>
+							<Typography color="gray1">营养分析</Typography>
+						</Flexbox>
+						<Flexbox align="center" gap="2" @tap="navigateTo(`/pagesA/cookbook/cookbook?id=${member_id}&memberId=${family_member_id}`)">
+							<Icon src="b_file.png" size="20"></Icon>
+							<Typography color="gray1">历史食谱</Typography>
+						</Flexbox>
 					</Flexbox>
 				</Flexbox>
-			</Flexbox>
-			<Flexbox direction="column" gap="16">
-				<Flexbox direction="column" gap="12" v-for="(day, index) in recipe_data.recipe_content" :key="index">
-					<Typography fontSize="16" :bold="true">第{{ index + 1 }}天</Typography>
-					<Flexbox direction="column" className="table">
-						<Flexbox className="tr" v-for="row in rows" :key="row">
-							<Flexbox align="center" className="td">
-								<Typography color="gray2">{{ rowsMap[row] }}</Typography>
-							</Flexbox>
-							<Flexbox align="left" className="td">
-								<Typography className="meal-text">{{ mergedQuantities(day[row] || []).join('\n') }}</Typography>
+				<Flexbox direction="column" gap="16">
+					<Flexbox direction="column" gap="12" v-for="(day, index) in recipe_data.recipe_content" :key="index">
+						<Typography fontSize="16" :bold="true">第{{ index + 1 }}天</Typography>
+						<Flexbox direction="column" className="table">
+							<Flexbox className="tr" v-for="row in rows" :key="row">
+								<Flexbox align="center" className="td">
+									<Typography color="gray2">{{ rowsMap[row] }}</Typography>
+								</Flexbox>
+								<Flexbox align="left" className="td">
+									<Typography className="meal-text">{{ mergedQuantities(day[row] || []).join('\n') }}</Typography>
+								</Flexbox>
 							</Flexbox>
 						</Flexbox>
 					</Flexbox>
 				</Flexbox>
-			</Flexbox>
+			</block>
 		</Flexbox>
 
-		<Flexbox align="center" direction="column" gap="30" className="empty-content" v-if="!loaded && !isEmpty && recipe_data.recipe_content.length">
+		<Flexbox align="center" direction="column" gap="30" className="empty-content" v-if="isLoading">
 			<Flexbox align="center" direction="column">
 				<Typography color="primary">AI正在为你食谱，</Typography>
 				<Typography color="primary">预计用时2～5分钟，请稍后刷新本页面...</Typography>
@@ -87,7 +89,7 @@
 			</Flexbox>
 		</Flexbox>
 
-		<Flexbox gap="9" className="tabbar-content" v-if="recipe_data.recipe_content.length && !isEmpty">
+		<Flexbox gap="9" className="tabbar-content" v-if="recipe_data.recipe_content.length && !isEmpty && !isLoading">
 			<Flexbox align="center" gap="4" className="adjust-btn" @tap="openPopup('speechPopup')">
 				<Icon src="b_microphone-primary.png" size="24"></Icon>
 				<Typography fontSize="18" color="primary">调整食谱</Typography>
@@ -130,7 +132,7 @@ export default {
 				recipe_content: []
 			},
 			speechResult: '',
-			loaded: false,
+			isLoading: false,
 			isEmpty: false
 		};
 	},
@@ -235,6 +237,10 @@ export default {
 				},
 				success: (res) => {
 					if (res) {
+						uni.showToast({
+							title: '推送成功',
+							icon: 'none'
+						});
 						this.recipe_data = res;
 					}
 				},
@@ -349,10 +355,10 @@ export default {
 				success: (res) => {
 					if (res) {
 						this.recipe_data = res;
+						this.isLoading = false;
+					} else {
+						this.isLoading = true;
 					}
-				},
-				complete: () => {
-					this.loaded = true;
 				}
 			});
 		}
