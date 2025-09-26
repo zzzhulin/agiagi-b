@@ -412,7 +412,7 @@ export default {
 	}
 
 	.confirm-btn {
-		width: 120rpx;
+		width: 140rpx;
 		height: 48rpx;
 		border-radius: 44rpx;
 		margin-left: auto;
