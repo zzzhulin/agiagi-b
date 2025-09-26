@@ -94,6 +94,9 @@
 .scheme-page .push-btn {
   background-color: #30a375;
 }
+.scheme-page .push-btn.pushed {
+  background-color: #cfcfcf;
+}
 .scheme-page .empty-content {
   margin-top: 60rpx;
 }

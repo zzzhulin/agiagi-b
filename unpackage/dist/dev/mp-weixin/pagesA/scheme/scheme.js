@@ -178,7 +178,8 @@ var _default = {
       scheme_id: '',
       diet_scheme_customized: '',
       recipe_data: {
-        recipe_content: []
+        recipe_content: [],
+        is_draft: true
       },
       speechResult: '',
       isLoading: false,
@@ -192,6 +193,9 @@ var _default = {
     this.getCustomer();
     if (this.recipeData) {
       this.recipe_data = this.recipeData;
+      // this.isLoading = false;
+    } else {
+      // this.isLoading = true;
     }
   },
   onPageScroll: function onPageScroll(e) {
@@ -289,10 +293,13 @@ var _default = {
         },
         success: function success(res) {
           if (res) {
-            uni.showToast({
-              title: '推送成功',
-              icon: 'none'
-            });
+            setTimeout(function () {
+              uni.showToast({
+                title: '推送成功',
+                icon: 'none',
+                duration: 2000
+              });
+            }, 100);
             _this3.recipe_data = res;
           }
         },
@@ -341,7 +348,7 @@ var _default = {
         },
         success: function success(res) {
           if (res) {
-            _this5.recipe_data = res;
+            _this5.getCookbook();
           }
         },
         complete: function complete() {

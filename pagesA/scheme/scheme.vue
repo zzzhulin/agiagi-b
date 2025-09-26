@@ -94,8 +94,11 @@
 				<Icon src="b_microphone-primary.png" size="24"></Icon>
 				<Typography fontSize="18" color="primary">调整食谱</Typography>
 			</Flexbox>
-			<Flexbox align="center" className="push-btn" @tap="onPush">
+			<Flexbox align="center" className="push-btn" v-if="recipe_data.is_draft" @tap="onPush">
 				<Typography fontSize="18" color="white" :bold="true">直接推送</Typography>
+			</Flexbox>
+			<Flexbox align="center" className="push-btn pushed" v-else>
+				<Typography fontSize="18" color="white" :bold="true">已推送</Typography>
 			</Flexbox>
 		</Flexbox>
 		<Speech ref="speechPopup" @confirm="setText"></Speech>
@@ -129,7 +132,8 @@ export default {
 			scheme_id: '',
 			diet_scheme_customized: '',
 			recipe_data: {
-				recipe_content: []
+				recipe_content: [],
+				is_draft: true
 			},
 			speechResult: '',
 			isLoading: false,
@@ -143,6 +147,9 @@ export default {
 		this.getCustomer();
 		if (this.recipeData) {
 			this.recipe_data = this.recipeData;
+			// this.isLoading = false;
+		} else {
+			// this.isLoading = true;
 		}
 	},
 	onPageScroll(e) {
@@ -237,10 +244,13 @@ export default {
 				},
 				success: (res) => {
 					if (res) {
-						uni.showToast({
-							title: '推送成功',
-							icon: 'none'
-						});
+						setTimeout(() => {
+							uni.showToast({
+								title: '推送成功',
+								icon: 'none',
+								duration: 2000
+							});
+						}, 100);
 						this.recipe_data = res;
 					}
 				},
@@ -287,7 +297,7 @@ export default {
 				},
 				success: (res) => {
 					if (res) {
-						this.recipe_data = res;
+						this.getCookbook();
 					}
 				},
 				complete: () => {
@@ -456,6 +466,10 @@ export default {
 
 	.push-btn {
 		background-color: $uni-color-primary;
+	}
+
+	.push-btn.pushed {
+		background-color: $uni-text-color-gray3;
 	}
 
 	.empty-content {
