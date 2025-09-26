@@ -30,7 +30,7 @@
 						placeholder-class="placeholder"
 					></textarea>
 					<Flexbox align="center" className="confirm-btn" @tap="generateRecipe">
-						<Typography color="white" :bold="true">确定</Typography>
+						<Typography color="white" :bold="true">生成食谱</Typography>
 					</Flexbox>
 				</Flexbox>
 			</Flexbox>
@@ -68,12 +68,12 @@
 
 		<Flexbox align="center" direction="column" gap="30" className="empty-content" v-if="isLoading">
 			<Flexbox align="center" direction="column">
-				<Typography color="primary">AI正在为你食谱，</Typography>
-				<Typography color="primary">预计用时2～5分钟，请稍后刷新本页面...</Typography>
+				<Typography color="primary">暂无食谱数据，</Typography>
+				<Typography color="primary">请为客户制定生成</Typography>
 			</Flexbox>
-			<Flexbox align="center" className="refresh-btn" @tap="getCookbook">
+			<!-- <Flexbox align="center" className="refresh-btn" @tap="getCookbook">
 				<Typography fontSize="16" color="primary">刷新</Typography>
-			</Flexbox>
+			</Flexbox> -->
 		</Flexbox>
 
 		<Flexbox direction="column" align="center" className="empty-scheme" v-if="isEmpty">
